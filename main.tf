@@ -9,7 +9,7 @@ data "google_client_config" "default" {}
 
 module "service_accounts_gke" {
   source     = "terraform-google-modules/service-accounts/google"
-  version    = "~> 3.0"
+  version    = "~> 4.0"
   project_id = local.project
   prefix     = var.name
   names      = [local.environment]
@@ -27,7 +27,7 @@ module "service_accounts_gke" {
 
 module "gke" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "27.0.0"
+  version                       = "34.0.0"
   project_id                    = local.project
   name                          = format("%s-%s-gke-cluster", var.name, local.environment)
   regional                      = var.regional
@@ -42,6 +42,7 @@ module "gke" {
   kubernetes_version            = var.kubernetes_version
   http_load_balancing           = false
   horizontal_pod_autoscaling    = true
+  deletion_protection           = var.deletion_protection
   network_policy                = var.network_policy
   network_policy_provider       = var.network_policy_provider
   enable_private_endpoint       = var.enable_private_endpoint

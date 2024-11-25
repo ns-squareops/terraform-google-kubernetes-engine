@@ -10,6 +10,12 @@ variable "environment" {
   default     = ""
 }
 
+variable "deletion_protection" {
+  description = "Deletion protection of cluster"
+  type        = string
+  default     = "false"
+}
+
 variable "name" {
   description = "The suffix name for the resources being created."
   type        = string

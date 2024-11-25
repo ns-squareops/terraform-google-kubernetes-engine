@@ -2,6 +2,7 @@ resource "google_container_node_pool" "node_pool" {
   name               = format("%s-%s-node-pool", var.name, var.environment)
   location           = var.location
   cluster            = var.cluster_name
+  project            = var.project
   max_pods_per_node  = 110
   version            = var.kubernetes_version
   initial_node_count = var.initial_node_count
