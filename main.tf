@@ -3,6 +3,15 @@ locals {
   project          = var.project_name
   environment      = var.environment
   gke_zones_string = join(",", var.gke_zones)
+  autoscaling_resource_limits = var.cluster_autoscaling.enabled ? concat([{
+    resource_type = "cpu"
+    minimum       = var.cluster_autoscaling.min_cpu_cores
+    maximum       = var.cluster_autoscaling.max_cpu_cores
+    }, {
+    resource_type = "memory"
+    minimum       = var.cluster_autoscaling.min_memory_gb
+    maximum       = var.cluster_autoscaling.max_memory_gb
+  }], var.cluster_autoscaling.gpu_resources) : []
 }
 
 data "google_client_config" "default" {}
@@ -27,7 +36,7 @@ module "service_accounts_gke" {
 
 module "gke" {
   source                        = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
-  version                       = "34.0.0"
+  version                       = "35.0.1"
   project_id                    = local.project
   name                          = format("%s-%s-gke-cluster", var.name, local.environment)
   regional                      = var.regional
@@ -58,6 +67,26 @@ module "gke" {
   monitoring_service            = var.monitoring_service
   monitoring_enabled_components = var.monitoring_enabled_components
   cluster_resource_labels       = var.cluster_resource_labels
+  cluster_autoscaling = {
+    enabled                     = var.cluster_autoscaling.enabled
+    autoscaling_profile         = var.cluster_autoscaling.autoscaling_profile
+    min_cpu_cores               = var.cluster_autoscaling.min_cpu_cores
+    max_cpu_cores               = var.cluster_autoscaling.max_cpu_cores
+    min_memory_gb               = var.cluster_autoscaling.min_memory_gb
+    max_memory_gb               = var.cluster_autoscaling.max_memory_gb
+    gpu_resources               = var.cluster_autoscaling.gpu_resources
+    auto_repair                 = var.cluster_autoscaling.auto_repair
+    auto_upgrade                = var.cluster_autoscaling.auto_upgrade
+    disk_size                   = var.cluster_autoscaling.disk_size
+    disk_type                   = var.cluster_autoscaling.disk_type
+    image_type                  = var.cluster_autoscaling.image_type
+    strategy                    = var.cluster_autoscaling.strategy
+    max_surge                   = var.cluster_autoscaling.max_surge
+    max_unavailable             = var.cluster_autoscaling.max_unavailable
+    enable_secure_boot          = var.cluster_autoscaling.enable_secure_boot
+    enable_integrity_monitoring = var.cluster_autoscaling.enable_integrity_monitoring
+  }
+
   node_pools = [
     {
       name               = format("%s-%s-node-pool", var.default_np_name, local.environment)
@@ -73,6 +102,7 @@ module "gke" {
       auto_repair        = true
       auto_upgrade       = true
       preemptible        = var.default_np_preemptible
+      spot               = var.spot_enabled
       initial_node_count = var.default_np_initial_node_count
       service_account    = module.service_accounts_gke.email
     },

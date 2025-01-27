@@ -1,5 +1,5 @@
 provider "google" {
-  region  = local.region
+  region = local.region
   # project = local.project
 }
 

@@ -8,7 +8,7 @@ locals {
 
 module "gke" {
   source                  = "../../"
-  project_name             = local.project_name
+  project_name            = local.project_name
   name                    = local.name
   region                  = local.region
   environment             = local.environment
@@ -26,7 +26,23 @@ module "gke" {
   default_np_max_count       = 5
   default_np_preemptible     = true
   deletion_protection        = false
-  
+  spot_enabled               = true
+  cluster_autoscaling = {
+    enabled                     = true
+    autoscaling_profile         = "BALANCED"
+    max_cpu_cores               = 3
+    min_cpu_cores               = 1
+    max_memory_gb               = 2
+    min_memory_gb               = 1
+    gpu_resources               = []
+    auto_repair                 = true
+    auto_upgrade                = true
+    disk_size                   = 50
+    disk_type                   = "pd-standard"
+    image_type                  = "COS_CONTAINERD"
+    enable_secure_boot          = false
+    enable_integrity_monitoring = true
+  }
 }
 
 
