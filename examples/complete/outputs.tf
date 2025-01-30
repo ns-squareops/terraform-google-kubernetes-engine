@@ -9,7 +9,7 @@ output "kubernetes_endpoint" {
   value       = module.gke.kubernetes_endpoint
 }
 
-# output "node_pool" {
-#   value       = module.managed_node_pool.node_pool
-#   description = "Details of node pools"
-# }
+output "node_pool" {
+  value       = module.managed_node_pool.node_pool.name
+  description = "Details of node pools name"
+}

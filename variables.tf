@@ -242,7 +242,6 @@ variable "node_pools_oauth_scopes" {
       "https://www.googleapis.com/auth/monitoring",
       "https://www.googleapis.com/auth/servicecontrol",
       "https://www.googleapis.com/auth/trace.append",
-      "https://www.googleapis.com/auth/devstorage.read_only",
       "https://www.googleapis.com/auth/cloud-platform",
     ]
   }
@@ -275,16 +274,23 @@ variable "cluster_autoscaling" {
   default = {
     enabled                     = false
     autoscaling_profile         = "BALANCED"
-    max_cpu_cores               = 0
-    min_cpu_cores               = 0
-    max_memory_gb               = 0
-    min_memory_gb               = 0
+    min_cpu_cores               = 2
+    max_cpu_cores               = 64
+    min_memory_gb               = 8
+    max_memory_gb               = 128
     gpu_resources               = []
     auto_repair                 = true
     auto_upgrade                = true
     disk_size                   = 100
     disk_type                   = "pd-standard"
     image_type                  = "COS_CONTAINERD"
+    strategy                    = "SURGE"
+    max_surge                   = 1
+    max_unavailable             = 0
+    node_pool_soak_duration     = "0s"
+    batch_soak_duration         = "0s"
+    batch_percentage            = 25
+    batch_node_count            = 1
     enable_secure_boot          = false
     enable_integrity_monitoring = true
   }

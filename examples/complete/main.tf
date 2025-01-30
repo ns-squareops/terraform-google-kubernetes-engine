@@ -21,14 +21,14 @@ module "gke" {
   #   state    = "ENCRYPTED"
   #   key_name = "" #name of a CloudKMS key
   # }]
-  master_authorized_networks = ""
+  master_authorized_networks = "" #Pass a cidr here when enable_private_endpoint is true
   default_np_instance_type   = "e2-medium" #"e2-standard-2" #"e2-medium"
   default_np_max_count       = 5
-  default_np_preemptible     = true
+  default_np_preemptible     = false
   deletion_protection        = false
-  spot_enabled               = true
+  spot_enabled               = true # Keep it false if preemptible is true
   cluster_autoscaling = {
-    enabled                     = true
+    enabled                     = false # keep it true if you want to use node pool autoscaling
     autoscaling_profile         = "BALANCED"
     max_cpu_cores               = 3
     min_cpu_cores               = 1
@@ -46,24 +46,39 @@ module "gke" {
 }
 
 
-# module "managed_node_pool" {
-#   source             = "../../modules/node-pool"
-#   depends_on         = [module.gke]
-#   project            = local.project
-#   cluster_name       = module.gke.cluster_name
-#   name               = "app"
-#   environment        = local.environment
-#   location           = local.region
-#   kubernetes_version = "1.30"
-#   service_account    = module.gke.service_accounts_gke
-#   initial_node_count = 1
-#   min_count          = 1
-#   max_count          = 5
-#   node_locations     = ["asia-south1-a"] # , "asia-south1-b", "asia-south1-c"]
-#   preemptible        = true
-#   instance_type      = "e2-standard-2"
-#   disk_size_gb       = 50
-#   labels = {
-#     "Addons-Services" : true
-#   }
-# }
+module "managed_node_pool" {
+  source             = "../../modules/node-pool"
+  depends_on         = [module.gke]
+  project            = local.project
+  cluster_name       = module.gke.cluster_name
+  name               = "app"
+  environment        = local.environment
+  location           = local.region
+  kubernetes_version = "1.30"
+  service_account    = module.gke.service_accounts_gke
+  initial_node_count = 1
+  min_count          = 1
+  max_count          = 5
+  node_locations     = ["asia-south1-a"] # , "asia-south1-b", "asia-south1-c"]
+  preemptible        = true
+  instance_type      = "e2-medium"
+  disk_size_gb       = 50
+  disk_type          = "pd-standard"
+  image_type         = "COS_CONTAINERD"
+  boot_disk_kms_key  = "" # Can be modified if required
+  max_surge          = 1
+  max_unavailable    = 0
+  enable_secure_boot = false
+  auto_repair        = true
+  auto_upgrade       = true
+  # Metadata & Labels
+  labels = {
+    "Addon-Services" = true
+  }
+  tags = ["gke-node-pool", "env-${local.environment}"]
+
+  # Node Taints (if applicable)
+  node_pools_taints = {
+    all = []
+  }
+}
