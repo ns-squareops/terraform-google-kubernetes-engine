@@ -73,7 +73,7 @@ module "managed_node_pool" {
   auto_upgrade       = true
   # Metadata & Labels
   labels = {
-    "Addon-Services" = true
+    "Addons-Services" = true
   }
   tags = ["gke-node-pool", "env-${local.environment}"]
 
