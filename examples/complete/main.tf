@@ -21,7 +21,7 @@ module "gke" {
   #   state    = "ENCRYPTED"
   #   key_name = "" #name of a CloudKMS key
   # }]
-  master_authorized_networks = "" #Pass a cidr here when enable_private_endpoint is true
+  master_authorized_networks = ""          #Pass a cidr here when enable_private_endpoint is true
   default_np_instance_type   = "e2-medium" #"e2-standard-2" #"e2-medium"
   default_np_max_count       = 5
   default_np_preemptible     = false
