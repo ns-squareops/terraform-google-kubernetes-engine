@@ -20,4 +20,3 @@ terraform {
     module_name = "blueprints/terraform/terraform-google-kubernetes-engine:private-cluster/v27.0.0"
   }
 }
-

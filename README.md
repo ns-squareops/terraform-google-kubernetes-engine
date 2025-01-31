@@ -77,22 +77,20 @@ To prevent destruction interruptions, any resources that have been created outsi
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=0.13 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | >= 4.51.0, < 5.0, !=4.65.0, !=4.65.1 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.10 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | >= 4.51.0, < 5.0, !=4.65.0, !=4.65.1 |
+| <a name="provider_google"></a> [google](#provider\_google) | n/a |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_gke"></a> [gke](#module\_gke) | terraform-google-modules/kubernetes-engine/google//modules/private-cluster | 27.0.0 |
-| <a name="module_service_accounts_gke"></a> [service\_accounts\_gke](#module\_service\_accounts\_gke) | terraform-google-modules/service-accounts/google | ~> 3.0 |
+| <a name="module_gke"></a> [gke](#module\_gke) | terraform-google-modules/kubernetes-engine/google//modules/private-cluster | 35.0.1 |
+| <a name="module_service_accounts_gke"></a> [service\_accounts\_gke](#module\_service\_accounts\_gke) | terraform-google-modules/service-accounts/google | ~> 4.0 |
 
 ## Resources
 
@@ -104,19 +102,36 @@ To prevent destruction interruptions, any resources that have been created outsi
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_boot_disk_kms_key"></a> [boot\_disk\_kms\_key](#input\_boot\_disk\_kms\_key) | KMS encryption key for boot disks of node pools. | `string` | `""` | no |
+| <a name="input_cluster_autoscaling"></a> [cluster\_autoscaling](#input\_cluster\_autoscaling) | Cluster autoscaling configuration. See [more details](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters#clusterautoscaling) | <pre>object({<br/>    enabled                     = bool<br/>    autoscaling_profile         = string<br/>    min_cpu_cores               = number<br/>    max_cpu_cores               = number<br/>    min_memory_gb               = number<br/>    max_memory_gb               = number<br/>    gpu_resources               = list(object({ resource_type = string, minimum = number, maximum = number }))<br/>    auto_repair                 = bool<br/>    auto_upgrade                = bool<br/>    disk_size                   = optional(number)<br/>    disk_type                   = optional(string)<br/>    image_type                  = optional(string)<br/>    strategy                    = optional(string)<br/>    max_surge                   = optional(number)<br/>    max_unavailable             = optional(number)<br/>    node_pool_soak_duration     = optional(string)<br/>    batch_soak_duration         = optional(string)<br/>    batch_percentage            = optional(number)<br/>    batch_node_count            = optional(number)<br/>    enable_secure_boot          = optional(bool, false)<br/>    enable_integrity_monitoring = optional(bool, true)<br/>  })</pre> | <pre>{<br/>  "auto_repair": true,<br/>  "auto_upgrade": true,<br/>  "autoscaling_profile": "BALANCED",<br/>  "batch_node_count": 1,<br/>  "batch_percentage": 25,<br/>  "batch_soak_duration": "0s",<br/>  "disk_size": 100,<br/>  "disk_type": "pd-standard",<br/>  "enable_integrity_monitoring": true,<br/>  "enable_secure_boot": false,<br/>  "enabled": false,<br/>  "gpu_resources": [],<br/>  "image_type": "COS_CONTAINERD",<br/>  "max_cpu_cores": 64,<br/>  "max_memory_gb": 128,<br/>  "max_surge": 1,<br/>  "max_unavailable": 0,<br/>  "min_cpu_cores": 2,<br/>  "min_memory_gb": 8,<br/>  "node_pool_soak_duration": "0s",<br/>  "strategy": "SURGE"<br/>}</pre> | no |
 | <a name="input_cluster_resource_labels"></a> [cluster\_resource\_labels](#input\_cluster\_resource\_labels) | The GCE resource labels (a map of key/value pairs) to be applied to the cluster | `map(string)` | `{}` | no |
-| <a name="input_database_encryption"></a> [database\_encryption](#input\_database\_encryption) | Application-layer Secrets Encryption settings. The object format is {state = string, key\_name = string}. Valid values of state are: "ENCRYPTED"; "DECRYPTED". key\_name is the name of a CloudKMS key. | `list(object({ state = string, key_name = string }))` | <pre>[<br>  {<br>    "key_name": "",<br>    "state": "DECRYPTED"<br>  }<br>]</pre> | no |
+| <a name="input_create_service_account"></a> [create\_service\_account](#input\_create\_service\_account) | Whether to create a new service account for the cluster. | `bool` | `false` | no |
+| <a name="input_database_encryption"></a> [database\_encryption](#input\_database\_encryption) | Application-layer Secrets Encryption settings. The object format is {state = string, key\_name = string}. Valid values of state are: "ENCRYPTED"; "DECRYPTED". key\_name is the name of a CloudKMS key. | `list(object({ state = string, key_name = string }))` | <pre>[<br/>  {<br/>    "key_name": "",<br/>    "state": "DECRYPTED"<br/>  }<br/>]</pre> | no |
 | <a name="input_default_np_disk_size_gb"></a> [default\_np\_disk\_size\_gb](#input\_default\_np\_disk\_size\_gb) | Disk size (in GB) for the default node pool | `number` | `50` | no |
 | <a name="input_default_np_initial_node_count"></a> [default\_np\_initial\_node\_count](#input\_default\_np\_initial\_node\_count) | Initial number of nodes for the default node pool | `number` | `1` | no |
 | <a name="input_default_np_instance_type"></a> [default\_np\_instance\_type](#input\_default\_np\_instance\_type) | Machine type for the default node pool | `string` | `"e2-medium"` | no |
+| <a name="input_default_np_local_ssd_count"></a> [default\_np\_local\_ssd\_count](#input\_default\_np\_local\_ssd\_count) | Number of local SSDs to attach to each node in the default node pool. | `number` | `0` | no |
 | <a name="input_default_np_max_count"></a> [default\_np\_max\_count](#input\_default\_np\_max\_count) | Maximum number of nodes for the default node pool | `number` | `3` | no |
 | <a name="input_default_np_min_count"></a> [default\_np\_min\_count](#input\_default\_np\_min\_count) | Minimum number of nodes for the default node pool | `number` | `1` | no |
 | <a name="input_default_np_name"></a> [default\_np\_name](#input\_default\_np\_name) | Name of the default node pool | `string` | `"addons"` | no |
 | <a name="input_default_np_preemptible"></a> [default\_np\_preemptible](#input\_default\_np\_preemptible) | Enable preemptible instances for the default node pool | `bool` | `true` | no |
+| <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Deletion protection of cluster | `string` | `"false"` | no |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | Disk type for the default node pool | `string` | `"pd-standard"` | no |
+| <a name="input_enable_binary_authorization"></a> [enable\_binary\_authorization](#input\_enable\_binary\_authorization) | Enable binary authorization | `bool` | `false` | no |
+| <a name="input_enable_cilium_clusterwide_network_policy"></a> [enable\_cilium\_clusterwide\_network\_policy](#input\_enable\_cilium\_clusterwide\_network\_policy) | Whether to enable Cilium Cluster-wide network policies. Set to 'true' to enable Cilium network policies for advanced security features. | `bool` | `false` | no |
+| <a name="input_enable_cost_management"></a> [enable\_cost\_management](#input\_enable\_cost\_management) | Enable cost management | `bool` | `false` | no |
+| <a name="input_enable_gcfs"></a> [enable\_gcfs](#input\_enable\_gcfs) | Enable Google Container File System (GCFS) for better storage performance. | `bool` | `false` | no |
+| <a name="input_enable_gvnic"></a> [enable\_gvnic](#input\_enable\_gvnic) | Enable GvNIC for improved networking performance. | `bool` | `false` | no |
+| <a name="input_enable_horizontal_pod_autoscaling"></a> [enable\_horizontal\_pod\_autoscaling](#input\_enable\_horizontal\_pod\_autoscaling) | Enable Horizontal Pod Autoscaler (HPA) in the cluster. | `bool` | `true` | no |
+| <a name="input_enable_http_load_balancing"></a> [enable\_http\_load\_balancing](#input\_enable\_http\_load\_balancing) | Enable HTTP Load Balancing (GCP Ingress) for the cluster. | `bool` | `false` | no |
+| <a name="input_enable_intranode_visibility"></a> [enable\_intranode\_visibility](#input\_enable\_intranode\_visibility) | Whether to enable intra-node visibility. Set to 'true' to enable intra-node visibility and allow communication between pods on the same node. | `bool` | `true` | no |
+| <a name="input_enable_kubernetes_alpha"></a> [enable\_kubernetes\_alpha](#input\_enable\_kubernetes\_alpha) | Whether to enable Kubernetes alpha features. Set to 'true' to enable alpha features that are not yet stable. | `bool` | `false` | no |
+| <a name="input_enable_l4_ilb_subsetting"></a> [enable\_l4\_ilb\_subsetting](#input\_enable\_l4\_ilb\_subsetting) | Enable L4 ILB subsetting | `bool` | `false` | no |
 | <a name="input_enable_private_endpoint"></a> [enable\_private\_endpoint](#input\_enable\_private\_endpoint) | Whether to enable the private endpoint for the GKE cluster. | `bool` | `false` | no |
 | <a name="input_enable_private_nodes"></a> [enable\_private\_nodes](#input\_enable\_private\_nodes) | Whether to enable private nodes for the GKE cluster. | `bool` | `true` | no |
 | <a name="input_enable_secure_boot"></a> [enable\_secure\_boot](#input\_enable\_secure\_boot) | Enable secure boot for the default node pool | `bool` | `false` | no |
+| <a name="input_enable_shielded_nodes"></a> [enable\_shielded\_nodes](#input\_enable\_shielded\_nodes) | Enable shielded nodes | `bool` | `true` | no |
+| <a name="input_enable_tpu"></a> [enable\_tpu](#input\_enable\_tpu) | Whether to enable Tensor Processing Units (TPUs). Set to 'true' to enable TPUs for your GKE cluster. | `bool` | `false` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment in which the resources are being deployed. | `string` | `""` | no |
 | <a name="input_gke_backup_agent_config"></a> [gke\_backup\_agent\_config](#input\_gke\_backup\_agent\_config) | Whether Backup for GKE agent is enabled for this cluster. | `bool` | `false` | no |
 | <a name="input_gke_zones"></a> [gke\_zones](#input\_gke\_zones) | The zones to host the cluster in (optional if regional cluster / required if zonal) | `list(string)` | `[]` | no |
@@ -133,13 +148,23 @@ To prevent destruction interruptions, any resources that have been created outsi
 | <a name="input_name"></a> [name](#input\_name) | The suffix name for the resources being created. | `string` | n/a | yes |
 | <a name="input_network_policy"></a> [network\_policy](#input\_network\_policy) | Enable network policy addon | `bool` | `false` | no |
 | <a name="input_network_policy_provider"></a> [network\_policy\_provider](#input\_network\_policy\_provider) | The network policy provider. | `string` | `"CALICO"` | no |
-| <a name="input_node_pools_oauth_scopes"></a> [node\_pools\_oauth\_scopes](#input\_node\_pools\_oauth\_scopes) | Map of lists containing node oauth scopes by node-pool name | `map(list(string))` | <pre>{<br>  "all": [<br>    "https://www.googleapis.com/auth/devstorage.read_only",<br>    "https://www.googleapis.com/auth/ndev.clouddns.readwrite",<br>    "https://www.googleapis.com/auth/service.management.readonly",<br>    "https://www.googleapis.com/auth/logging.write",<br>    "https://www.googleapis.com/auth/monitoring",<br>    "https://www.googleapis.com/auth/servicecontrol",<br>    "https://www.googleapis.com/auth/trace.append",<br>    "https://www.googleapis.com/auth/devstorage.read_only",<br>    "https://www.googleapis.com/auth/cloud-platform"<br>  ]<br>}</pre> | no |
+| <a name="input_node_pool_auto_repair"></a> [node\_pool\_auto\_repair](#input\_node\_pool\_auto\_repair) | Enable automatic repairs for node pools. | `bool` | `true` | no |
+| <a name="input_node_pool_auto_upgrade"></a> [node\_pool\_auto\_upgrade](#input\_node\_pool\_auto\_upgrade) | Enable automatic upgrades for node pools. | `bool` | `true` | no |
+| <a name="input_node_pool_image_type"></a> [node\_pool\_image\_type](#input\_node\_pool\_image\_type) | The image type to use for node pools. Defaults to COS\_CONTAINERD. | `string` | `"COS_CONTAINERD"` | no |
+| <a name="input_node_pools_labels"></a> [node\_pools\_labels](#input\_node\_pools\_labels) | Map of maps containing node labels by node-pool name | `map(map(string))` | `{}` | no |
+| <a name="input_node_pools_metadata"></a> [node\_pools\_metadata](#input\_node\_pools\_metadata) | Map of maps containing node metadata by node-pool name | `map(map(string))` | `{}` | no |
+| <a name="input_node_pools_oauth_scopes"></a> [node\_pools\_oauth\_scopes](#input\_node\_pools\_oauth\_scopes) | Map of lists containing node oauth scopes by node-pool name | `map(list(string))` | <pre>{<br/>  "all": [<br/>    "https://www.googleapis.com/auth/devstorage.read_only",<br/>    "https://www.googleapis.com/auth/ndev.clouddns.readwrite",<br/>    "https://www.googleapis.com/auth/service.management.readonly",<br/>    "https://www.googleapis.com/auth/logging.write",<br/>    "https://www.googleapis.com/auth/monitoring",<br/>    "https://www.googleapis.com/auth/servicecontrol",<br/>    "https://www.googleapis.com/auth/trace.append",<br/>    "https://www.googleapis.com/auth/cloud-platform"<br/>  ]<br/>}</pre> | no |
+| <a name="input_node_pools_tags"></a> [node\_pools\_tags](#input\_node\_pools\_tags) | Map of lists containing node tags by node-pool name | `map(list(string))` | `{}` | no |
+| <a name="input_node_pools_taints"></a> [node\_pools\_taints](#input\_node\_pools\_taints) | Map of maps containing node taints by node-pool name | <pre>map(map(object({<br/>    effect = string<br/>    key    = string<br/>    value  = string<br/>  })))</pre> | `{}` | no |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | The ID or project number of the Google Cloud project. | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region to host the cluster in (optional if zonal cluster / required if regional) | `string` | `null` | no |
 | <a name="input_regional"></a> [regional](#input\_regional) | Whether is a regional cluster (zonal cluster if set false. WARNING: changing this after cluster creation is destructive!) | `bool` | `true` | no |
 | <a name="input_release_channel"></a> [release\_channel](#input\_release\_channel) | The release channel of the cluster. Accepted values are `UNSPECIFIED`, `RAPID`, `REGULAR` and `STABLE`. Defaults to `UNSPECIFIED`. | `string` | `"STABLE"` | no |
 | <a name="input_remove_default_node_pool"></a> [remove\_default\_node\_pool](#input\_remove\_default\_node\_pool) | Remove default node pool | `bool` | `true` | no |
+| <a name="input_service_accounts_project_roles"></a> [service\_accounts\_project\_roles](#input\_service\_accounts\_project\_roles) | List of service account roles in the format 'serviceAccount:role'. | `list(string)` | `[]` | no |
+| <a name="input_spot_enabled"></a> [spot\_enabled](#input\_spot\_enabled) | Enable spot instances for the default node pool | `bool` | `true` | no |
 | <a name="input_subnet"></a> [subnet](#input\_subnet) | The name of the subnet within the VPC network for the GKE cluster. | `string` | `""` | no |
+| <a name="input_vertical_pod_autoscaling_enabled"></a> [vertical\_pod\_autoscaling\_enabled](#input\_vertical\_pod\_autoscaling\_enabled) | Enable vertical pod autoscaling | `bool` | `false` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name of the VPC network where the GKE cluster will be created. | `string` | `""` | no |
 
 ## Outputs
