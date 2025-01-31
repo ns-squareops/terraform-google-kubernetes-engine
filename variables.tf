@@ -296,3 +296,177 @@ variable "cluster_autoscaling" {
   }
   description = "Cluster autoscaling configuration. See [more details](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters#clusterautoscaling)"
 }
+
+variable "vertical_pod_autoscaling_enabled" {
+  type        = bool
+  description = "Enable vertical pod autoscaling"
+  default     = false
+}
+
+variable "enable_shielded_nodes" {
+  type        = bool
+  description = "Enable shielded nodes"
+  default     = true
+}
+
+variable "enable_l4_ilb_subsetting" {
+  type        = bool
+  description = "Enable L4 ILB subsetting"
+  default     = false
+}
+
+variable "enable_binary_authorization" {
+  type        = bool
+  description = "Enable binary authorization"
+  default     = false
+}
+
+variable "enable_cost_management" {
+  type        = bool
+  description = "Enable cost management"
+  default     = false
+}
+
+# variable "node_pools" {
+#   type        = list(object({
+#     name               = string
+#     machine_type       = string
+#     node_locations     = list(string)
+#     min_count          = number
+#     max_count          = number
+#     local_ssd_count    = number
+#     disk_size_gb       = number
+#     enable_secure_boot = bool
+#     disk_type          = string
+#     image_type         = string
+#     auto_repair        = bool
+#     auto_upgrade       = bool
+#     preemptible        = bool
+#     spot               = bool
+#     initial_node_count = number
+#     service_account    = string
+#     enable_gcfs        = bool
+#     enable_gvnic       = bool
+#     boot_disk_kms_key  = string
+#   }))
+#   description = "List of node pools to create"
+# }
+
+variable "node_pools_labels" {
+  type        = map(map(string))
+  description = "Map of maps containing node labels by node-pool name"
+  default     = {}
+}
+
+variable "node_pools_metadata" {
+  type        = map(map(string))
+  description = "Map of maps containing node metadata by node-pool name"
+  default     = {}
+}
+
+variable "node_pools_taints" {
+  type = map(map(object({
+    effect = string
+    key    = string
+    value  = string
+  })))
+  description = "Map of maps containing node taints by node-pool name"
+  default     = {}
+}
+
+variable "node_pools_tags" {
+  type        = map(list(string))
+  description = "Map of lists containing node tags by node-pool name"
+  default     = {}
+}
+# Added missing variables
+variable "enable_gvnic" {
+  type        = bool
+  default     = false
+  description = "Enable GvNIC for improved networking performance."
+}
+
+variable "node_pool_auto_upgrade" {
+  type        = bool
+  default     = true
+  description = "Enable automatic upgrades for node pools."
+}
+
+variable "enable_gcfs" {
+  type        = bool
+  default     = false
+  description = "Enable Google Container File System (GCFS) for better storage performance."
+}
+
+variable "service_accounts_project_roles" {
+  type        = list(string)
+  default     = []
+  description = "List of service account roles in the format 'serviceAccount:role'."
+}
+
+variable "node_pool_image_type" {
+  type        = string
+  default     = "COS_CONTAINERD"
+  description = "The image type to use for node pools. Defaults to COS_CONTAINERD."
+}
+
+variable "default_np_local_ssd_count" {
+  type        = number
+  default     = 0
+  description = "Number of local SSDs to attach to each node in the default node pool."
+}
+
+variable "node_pool_auto_repair" {
+  type        = bool
+  default     = true
+  description = "Enable automatic repairs for node pools."
+}
+
+variable "create_service_account" {
+  type        = bool
+  default     = false
+  description = "Whether to create a new service account for the cluster."
+}
+
+variable "enable_horizontal_pod_autoscaling" {
+  type        = bool
+  default     = true
+  description = "Enable Horizontal Pod Autoscaler (HPA) in the cluster."
+}
+
+variable "enable_http_load_balancing" {
+  type        = bool
+  default     = false
+  description = "Enable HTTP Load Balancing (GCP Ingress) for the cluster."
+}
+
+variable "boot_disk_kms_key" {
+  type        = string
+  default     = ""
+  description = "KMS encryption key for boot disks of node pools."
+}
+
+variable "enable_intranode_visibility" {
+  description = "Whether to enable intra-node visibility. Set to 'true' to enable intra-node visibility and allow communication between pods on the same node."
+  type        = bool
+  default     = true
+}
+
+
+variable "enable_tpu" {
+  description = "Whether to enable Tensor Processing Units (TPUs). Set to 'true' to enable TPUs for your GKE cluster."
+  type        = bool
+  default     = false
+}
+
+variable "enable_kubernetes_alpha" {
+  description = "Whether to enable Kubernetes alpha features. Set to 'true' to enable alpha features that are not yet stable."
+  type        = bool
+  default     = false
+}
+
+variable "enable_cilium_clusterwide_network_policy" {
+  description = "Whether to enable Cilium Cluster-wide network policies. Set to 'true' to enable Cilium network policies for advanced security features."
+  type        = bool
+  default     = false
+}

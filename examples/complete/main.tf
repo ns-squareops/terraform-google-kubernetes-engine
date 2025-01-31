@@ -21,18 +21,19 @@ module "gke" {
   #   state    = "ENCRYPTED"
   #   key_name = "" #name of a CloudKMS key
   # }]
-  master_authorized_networks = ""          #Pass a cidr here when enable_private_endpoint is true
-  default_np_instance_type   = "e2-medium" #"e2-standard-2" #"e2-medium"
-  default_np_max_count       = 5
-  default_np_preemptible     = false
-  deletion_protection        = false
-  spot_enabled               = true # Keep it false if preemptible is true
+  master_authorized_networks       = ""          #Pass a cidr here when enable_private_endpoint is true
+  default_np_instance_type         = "e2-medium" #"e2-standard-2" #"e2-medium"
+  default_np_max_count             = 5
+  default_np_preemptible           = false
+  deletion_protection              = false
+  spot_enabled                     = true  # Keep it false if preemptible is true
+  vertical_pod_autoscaling_enabled = false # Keep it true if you want to use vertical pod autoscaling
   cluster_autoscaling = {
     enabled                     = false # keep it true if you want to use node pool autoscaling
     autoscaling_profile         = "BALANCED"
-    max_cpu_cores               = 3
+    max_cpu_cores               = 8
     min_cpu_cores               = 1
-    max_memory_gb               = 2
+    max_memory_gb               = 16
     min_memory_gb               = 1
     gpu_resources               = []
     auto_repair                 = true
