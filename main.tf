@@ -37,7 +37,21 @@ module "service_accounts_gke" {
   display_name = format("%s-%s-gke-cluster Nodes Service Account", var.name, local.environment)
 }
 
+module "group" {
+  source  = "terraform-google-modules/group/google"
+  version = "~> 0.7"
+
+  id           = "gke-security-groups@squareops.com"
+  display_name = "gke-security-groups"
+  description  = "gke security group"
+  domain       = "squareops.com"
+  owners       = [""]
+  managers     = [""]
+  members      = ["org-gke-admins@squareops.com","org-gke-editors@squareops.com","org-gke-readonly@squareops.com"]
+}
+
 module "gke" {
+  depends_on = [ module.group ]
   source                                   = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
   version                                  = "35.0.1"
   project_id                               = local.project
@@ -79,6 +93,7 @@ module "gke" {
   enable_kubernetes_alpha                  = var.enable_kubernetes_alpha
   enable_l4_ilb_subsetting                 = var.enable_l4_ilb_subsetting
   enable_tpu                               = var.enable_tpu
+  authenticator_security_group	           = "gke-security-groups@squareops.com"
 
   cluster_autoscaling = {
     enabled                     = var.cluster_autoscaling.enabled
